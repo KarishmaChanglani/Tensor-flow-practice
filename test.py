@@ -1,9 +1,11 @@
+from builtins import len, str, float, range
+
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.compat.v1 import placeholder
 from tensorflow.compat.v1 import global_variables_initializer
 from tensorflow.compat.v1.train import GradientDescentOptimizer
-from tensorflow.compat.v1 import InteractiveSession
+from tensorflow.compat.v1 import Session
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
@@ -64,16 +66,16 @@ if __name__ == "__main__":
     X, Y = read_dataset()
     X, Y = shuffle(X, Y, random_state=45)
     train_x, test_x, train_y, test_y = train_test_split(X, Y, test_size=0.2, random_state=415)
-    print train_x.shape
-    print train_y.shape
-    print test_x.shape
+    print(train_x.shape)
+    print(train_y.shape)
+    print(test_x.shape)
 
     # define our hyper parameters
     learning_rate = 0.1
     training_epochs = 100
     cost_history = np.empty(shape=[1], dtype=float)
     n_dim = X.shape[1]
-    print'n_dim: ' + str(n_dim)
+    print('n_dim: ' + str(n_dim))
     n_class = 2
 
     n_hidden_1 = 60
@@ -108,7 +110,7 @@ if __name__ == "__main__":
     cost_fct = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=y, labels=y_))
     training_step = GradientDescentOptimizer(learning_rate).minimize(cost_fct)
 
-    with tf.Session() as sess:
+    with Session() as sess:
         sess.run(init)
 
         # Mean squared error
