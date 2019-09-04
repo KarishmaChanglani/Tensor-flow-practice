@@ -40,31 +40,31 @@ def one_hot_encode(labels):
     n_labels = len(labels)
     n_unique_labels = len(np.unique(labels))
     one_hot_encode_output = np.zeros((n_labels, n_unique_labels))
-    one_hot_encode_output[np.arange(n_labels)] = 1
+    one_hot_encode_output[np.arange(n_labels), labels] = 1
     return one_hot_encode_output
 
 
 def multilayer_perceptron(x, weights, biases):
-    layer1 = tf.matmul(x, weights['h1'] + biases['b1'])
+    layer1 = tf.matmul(x, weights['h1']) + biases['b1']
     layer1 = tf.nn.sigmoid(layer1)
 
-    layer2 = tf.matmul(layer1, weights['h2'] + biases['b2'])
+    layer2 = tf.matmul(layer1, weights['h2']) + biases['b2']
     layer2 = tf.nn.sigmoid(layer2)
 
-    layer3 = tf.matmul(layer2, weights['h3'] + biases['b3'])
+    layer3 = tf.matmul(layer2, weights['h3']) + biases['b3']
     layer3 = tf.nn.sigmoid(layer3)
 
-    layer4 = tf.matmul(layer3, weights['h4'] + biases['b4'])
+    layer4 = tf.matmul(layer3, weights['h4']) + biases['b4']
     layer4 = tf.nn.relu(layer4)
 
-    output_layer = tf.matmul(layer4, weights['out'] + biases['out'])
+    output_layer = tf.matmul(layer4, weights['out']) + biases['out']
 
     return output_layer
 
 
 if __name__ == "__main__":
     X, Y = read_dataset()
-    X, Y = shuffle(X, Y, random_state=45)
+    X, Y = shuffle(X, Y, random_state=1)
     train_x, test_x, train_y, test_y = train_test_split(X, Y, test_size=0.2, random_state=415)
     print(train_x.shape)
     print(train_y.shape)
@@ -72,10 +72,10 @@ if __name__ == "__main__":
 
     # define our hyper parameters
     learning_rate = 0.1
-    training_epochs = 100
+    training_epochs = 1000
     cost_history = np.empty(shape=[1], dtype=float)
     n_dim = X.shape[1]
-    print('n_dim: ' + str(n_dim))
+    print('n_dim: ', str(n_dim))
     n_class = 2
 
     n_hidden_1 = 60
@@ -122,20 +122,15 @@ if __name__ == "__main__":
             cost = sess.run(cost_fct, feed_dict={x: train_x, y_: train_y})
             cost_history = np.append(cost_history, cost)
             correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
-            print(tf.cast(correct_prediction, tf.float32))
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
             pred_y = sess.run(y, feed_dict={x: test_x})
             mse = tf.reduce_mean(tf.square(pred_y - test_y))
             mse_ = sess.run(mse)
             mse_history.append(mse_)
-            accuracy = (sess.run(accuracy, feed_dict={x:train_x, y_:train_y}))
+            accuracy = (sess.run(accuracy, feed_dict={x: train_x, y_: train_y}))
             accuracy_history.append(accuracy)
-            print('epoch: ', epoch)
-            print('correct prediction: ', correct_prediction)
-            print('cost: ', cost)
-            print('MSE: ', mse_)
-            print('Training Accuracy: ', accuracy)
+            print('epoch: ', epoch, 'cost: ', cost,  'MSE: ', mse_, 'Training Accuracy: ', accuracy)
 
         plt.plot(mse_history, "r")
         plt.show()
